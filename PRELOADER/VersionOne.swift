@@ -91,12 +91,12 @@ struct VersionOne: View {
         VStack {
             if isGameOver {
                 Text(didWin == true ? "Winner" : "Try again")
-                    .font(.grandstander(size: 68))
+                    .font(.system(size: 68, weight: .medium))
                     .foregroundStyle(LinearGradient.defaultGradient)
                     .transition(.opacity)
             } else {
                 Text("Click on any of the balls")
-                    .font(.grandstander(size: 27))
+                    .font(.system(size: 27, weight: .medium))
                     .foregroundStyle(LinearGradient.defaultGradient)
             }
         }
@@ -127,7 +127,7 @@ struct VersionOne: View {
 
                     if let _ = scores[index] {
                         Text("+100FS")
-                            .font(.grandstander(size: 24))
+                            .font(.system(size: 24, weight: .medium))
                             .foregroundColor(.white)
                             .shadow(radius: 4)
                             .scaleEffect(1.2)
@@ -153,7 +153,7 @@ struct VersionOne: View {
                     
                     Button {
                         if isGameOver {
-                            triggerAction()
+                            resetGame()
                         } else {
                             hasInteracted = true
                             onArrowButtonPressed()
@@ -314,12 +314,85 @@ struct VersionOne: View {
         hasInteracted = false
         scheduleGameEndCheck()
     }
-    
-    private func triggerAction() {
-        NotificationCenter.default.post(name: .loaderActionTriggered, object: nil)
-    }
 }
 
 #Preview {
     VersionOne()
 }
+
+
+extension LinearGradient {
+    static var defaultGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color(hex: "FC9512"),
+                Color(hex: "FED319"),
+                Color(hex: "FC9512"),
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+}
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue:  Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
+}
+
+struct StrokedText: View {
+    
+    let text: String
+    let size: CGFloat
+    
+    var body: some View {
+        ZStack {
+            Group {
+                Text(text)
+                    .offset(x: 1, y: 0)
+                
+                Text(text)
+                    .offset(x: 0, y: 1)
+                
+                Text(text)
+                    .offset(x: 1, y: -1)
+                
+                Text(text)
+                    .offset(x: -1, y: -1)
+                
+                Text(text)
+                    .offset(x: -1, y: 1)
+            }
+            .font(.system(size: size, weight: .medium))
+            .foregroundStyle(LinearGradient.defaultGradient)
+            
+            Text(text)
+                .font(.system(size: size, weight: .medium))
+                .foregroundStyle(Color(hex: "FFBB00"))
+        }
+    }
+}
+
+

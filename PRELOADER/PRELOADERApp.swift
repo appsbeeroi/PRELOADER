@@ -4,7 +4,7 @@ import SwiftUI
 struct PRELOADERApp: App {
     var body: some Scene {
         WindowGroup {
-            ArrowSimpleLoader()
+            VersionOne()
         }
     }
 }

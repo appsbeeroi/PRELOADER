@@ -15,10 +15,6 @@ struct VersionTwo: View {
         }
         .onAppear {
             startAnimations()
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                
-            }
         }
     }
     
@@ -85,10 +81,6 @@ struct VersionTwo: View {
         withAnimation(blinkAnimation) {
             isBlinking.toggle()
         }
-    }
-    
-    private func triggerAction() {
-        NotificationCenter.default.post(name: .loaderActionTriggered, object: nil)
     }
 }
 
